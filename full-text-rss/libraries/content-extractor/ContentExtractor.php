@@ -42,9 +42,19 @@ class ContentExtractor
 	public $fingerprints = array();
 	public $readability;
 	public $debug = false;
+        
+        // 20131011 Pulipuli Chen
+        // 加入記錄
+        private $path;
+        private $fallback;
 
 	function __construct($path, $fallback=null) {
-		SiteConfig::set_config_path($path, $fallback);	
+		SiteConfig::set_config_path($path, $fallback);
+                
+                // 20131011 Pulipuli Chen
+                // 加入記錄
+                $this->path = $path;
+                $this->fallback = $fallback;
 	}
 	
 	protected function debug($msg) {
@@ -564,9 +574,65 @@ class ContentExtractor
                 
                 // 20131011 要實作下一頁的偵測！！！
                 if (isset($this->body)) {
-                    $elem = $this->readability->dom->createElement('div', "TEST TEST TEST TEST TEST");
-                    //$this->body->appendChild($elem);
-                    $this->body = $elem;
+                    //$elems = @$xpath->query("//a[starts-with(@href, /?p=) and &page=2']", $this->readability->dom);
+                    $next_page_pattern = "//a[contains(@href, '&page=')]";
+                    $elems = @$xpath->query($next_page_pattern, $this->readability->dom);
+                    //$link = @$xpath->query("//a[contains(@href, '&page=')]/@href", $this->readability->dom);
+                    //if ($link, $) {
+                    if ($elems && $elems->length > 0) {
+                        
+                        //$elem = $this->readability->dom->createElement('div', $elems->item(0)->getAttribute("href"));
+                        $elem = $this->readability->dom->createElement('div', "aaa");
+                        $attributes = $elems->item(0)->attributes; 
+                        $href = $attributes->getNamedItem("href")->value;
+                        $url_component = parse_url($url);
+                        //$href = urlencode($href);
+                        //$elem = $this->readability->dom->createElement('div', $href);
+                        
+                        //$this->body = $elem;
+                        
+                        $permalink = $url_component["scheme"]."://".$url_component["host"].$href;
+                        //echo "[[[[".$permalink."]]]]";
+                        //$permalink = "http://blog.soft.idv.tw/?p=1606&page=2";
+                        
+                        $extractor = new ContentExtractor(dirname(__FILE__).'/site_config/custom', dirname(__FILE__).'/site_config/standard');
+                        $extractor->fingerprints = $options->fingerprints;
+                        
+                        $elem = new ContentExtractor($this->path, $this->fallback);
+                        $extractor->fingerprints = $this->fingerprints;
+                        
+                        $http = new HumbleHttpAgent();
+                        if ($permalink && ($response = $http->get($permalink, true)) && ($response['status_code'] < 300 || $response['status_code'] > 400)) {
+                            $html = $response['body'];
+                            // remove strange things
+                            $html = str_replace('</[>', '', $html);
+                            $html = convert_to_utf8($html, $response['headers']);
+                            $extract_result = $extractor->process($html, $permalink);
+                            //$readability = $extractor->readability;
+                            $content_block = ($extract_result) ? $extractor->getContent() : null;
+                            //$this->body->appendChild($elem);
+                            
+                        }
+                        
+                        //$doc = $this->readability->dom->("<node>".$content_block->C14N()."</node>");
+                        //$content = $content_block->
+                        //$content = $this->readability->dom->createElement('div', $content_block->innerHTML);
+                        
+                        $doc = new DOMDocument();
+                        $doc->loadHTML($content_block->innerHTML);
+                        $doc->saveHTML();
+                        //$content = $this->readability->dom->loadHTML($content_block->innerHTML);
+                        $content = $this->readability->dom->createElement('div', $content_block->innerHTML);
+                        $content = $this->readability->dom->importNode($content_block, true);
+                        $this->body->appendChild($content);
+                        //$this->body->appendChild($doc);
+                        
+                        //$xpath = new DOMXPath($this->readability->dom);
+                        //$elems = @$xpath->query($extract_pattern, $content_block);
+                        //$this->body->appendChild($content_block);
+                        //$this->body = $content_block;
+                    }
+                    
                 }
 		
 		// if we've had no success and we've used tidy, there's a chance
