@@ -21,11 +21,16 @@ if (!isset($options)) $options = new stdClass();
 // be told that the service is disabled.
 $options->enabled = true;
 
+// 預設網址
+// ----------------------
+// 僅供測試用
+$options->default_url = "";
+
 // Default entries (without access key)
 // ----------------------
 // The number of feed items to process when no API key is supplied
 // and no &max=x value is supplied in the querystring.
-$options->default_entries = 3;
+$options->default_entries = 50;
 
 // Max entries (without access key)
 // ----------------------
@@ -317,7 +322,17 @@ $options->error_message_with_key = '[unable to retrieve full-text content]';
 
 // 下一頁的規則
 // ----------------------
-$options->next_page_pattern = "//a[contains(@href, '&page=')]";
+// 參考資料：http://ap.teesoft.info/
+$next_page_pattern = array(
+    "contains(@href, '&page=')",
+    "contains(@class, 'next')",
+    "contains(@id, 'Next')",
+    "contains(@id, 'next')",
+    "contains(text(), 'Next')",
+    "contains(text(), 'next')",
+);
+
+$options->next_page_pattern = "//a[".join(" or ", $next_page_pattern)."]";
 
 /////////////////////////////////////////////////
 /// DO NOT CHANGE ANYTHING BELOW THIS ///////////

@@ -61,7 +61,7 @@ if (!defined('_FF_FTR_INDEX')) {
 		<legend>Create full-text feed from feed or webpage URL</legend>
 		<div class="control-group">
 			<label class="control-label" for="url">Enter URL</label>
-			<div class="controls"><input type="text" id="url" name="url" style="width: 450px;" title="URL" value="feeds.feedburner.com/quicktop" data-content="Typically this is a URL for a partial feed which we transform into a full-text feed. But it can also be a standard web page URL, in which case we'll extract its content and return it in a 1-item feed." /></div>
+			<div class="controls"><input type="text" id="url" name="url" style="width: 450px;" title="URL" value="<?php echo $options->default_url ?>" data-content="Typically this is a URL for a partial feed which we transform into a full-text feed. But it can also be a standard web page URL, in which case we'll extract its content and return it in a 1-item feed." /></div>
 		</div>
 	</fieldset>
 	<fieldset>

@@ -593,7 +593,7 @@ class ContentExtractor
                         
                         //$elem = $this->readability->dom->createElement('div', $elems->item(0)->getAttribute("href"));
                         $elem = $this->readability->dom->createElement('div', "aaa");
-                        $attributes = $elems->item(0)->attributes; 
+                        $attributes = $elems->item($elems->legnth)->attributes; 
                         $href = $attributes->getNamedItem("href")->value;
                         $url_component = parse_url($url);
                         //$href = urlencode($href);
@@ -629,18 +629,19 @@ class ContentExtractor
                         //$content = $this->readability->dom->createElement('div', $content_block->innerHTML);
                         
                         $doc = new DOMDocument();
-                        $doc->loadHTML($content_block->innerHTML);
-                        $doc->saveHTML();
-                        //$content = $this->readability->dom->loadHTML($content_block->innerHTML);
-                        $content = $this->readability->dom->createElement('div', $content_block->innerHTML);
-                        $content = $this->readability->dom->importNode($content_block, true);
-                        $this->body->appendChild($content);
-                        //$this->body->appendChild($doc);
-                        
-                        //$xpath = new DOMXPath($this->readability->dom);
-                        //$elems = @$xpath->query($extract_pattern, $content_block);
-                        //$this->body->appendChild($content_block);
-                        //$this->body = $content_block;
+                        if (@$doc->loadHTML($content_block->innerHTML)) {
+                            $doc->saveHTML();
+                            //$content = $this->readability->dom->loadHTML($content_block->innerHTML);
+                            $content = $this->readability->dom->createElement('div', $content_block->innerHTML);
+                            $content = $this->readability->dom->importNode($content_block, true);
+                            $this->body->appendChild($content);
+                            //$this->body->appendChild($doc);
+
+                            //$xpath = new DOMXPath($this->readability->dom);
+                            //$elems = @$xpath->query($extract_pattern, $content_block);
+                            //$this->body->appendChild($content_block);
+                            //$this->body = $content_block;
+                        }
                     }
                     
                 }
