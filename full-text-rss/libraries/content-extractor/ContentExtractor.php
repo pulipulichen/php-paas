@@ -47,6 +47,12 @@ class ContentExtractor
         // 加入記錄
         private $path;
         private $fallback;
+        
+        /**
+         * 設定檔的參數
+         * @var Array
+         */
+        private $options;
 
 	function __construct($path, $fallback=null) {
 		SiteConfig::set_config_path($path, $fallback);
@@ -55,6 +61,9 @@ class ContentExtractor
                 // 加入記錄
                 $this->path = $path;
                 $this->fallback = $fallback;
+                
+                require(dirname(__FILE__).'/../../config.php');
+                $this->options = $options;
 	}
 	
 	protected function debug($msg) {
@@ -575,7 +584,8 @@ class ContentExtractor
                 // 20131011 要實作下一頁的偵測！！！
                 if (isset($this->body)) {
                     //$elems = @$xpath->query("//a[starts-with(@href, /?p=) and &page=2']", $this->readability->dom);
-                    $next_page_pattern = "//a[contains(@href, '&page=')]";
+                    $next_page_pattern = $this->options->next_page_pattern;
+                    //$next_page_pattern = "//a[contains(@href, '&page=')]";
                     $elems = @$xpath->query($next_page_pattern, $this->readability->dom);
                     //$link = @$xpath->query("//a[contains(@href, '&page=')]/@href", $this->readability->dom);
                     //if ($link, $) {

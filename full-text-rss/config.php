@@ -315,6 +315,10 @@ $options->message_to_append_with_key = '';
 // ----------------------
 $options->error_message_with_key = '[unable to retrieve full-text content]';
 
+// 下一頁的規則
+// ----------------------
+$options->next_page_pattern = "//a[contains(@href, '&page=')]";
+
 /////////////////////////////////////////////////
 /// DO NOT CHANGE ANYTHING BELOW THIS ///////////
 /////////////////////////////////////////////////
