@@ -111,7 +111,9 @@ class Readability
 		/* Turn all double br's into p's */
 		$html = preg_replace($this->regexps['replaceBrs'], '</p><p>', $html);
 		$html = preg_replace($this->regexps['replaceFonts'], '<$1span>', $html);
-		$html = mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8");
+                if (function_exists('mb_convert_encoding')) {
+                    $html = mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8");
+                }
 		$this->dom = new DOMDocument();
 		$this->dom->preserveWhiteSpace = false;
 		$this->dom->registerNodeClass('DOMElement', 'JSLikeHTMLElement');

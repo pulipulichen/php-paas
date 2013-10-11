@@ -390,7 +390,7 @@ class SimplePie_Misc
 		}
 
 		// Let's do some conversion
-		if ($return = @mb_convert_encoding($data, $output, $input))
+		if (function_exists('mb_convert_encoding') && $return = @mb_convert_encoding($data, $output, $input))
 		{
 			return $return;
 		}
